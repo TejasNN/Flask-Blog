@@ -7,16 +7,19 @@ from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, Post
 from flaskblog.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
+
 @app.route("/")
 @app.route("/home")
 def home():
     posts = Post.query.all()
     return render_template("home.html", posts=posts)
-    
+
+
 @app.route("/about")
 def about():
     return render_template("about.html", title='About')
-    
+
+
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -30,7 +33,8 @@ def register():
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
-    
+
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -46,10 +50,12 @@ def login():
             flash('Login unsuccessful. Please check email or password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
+
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
@@ -63,6 +69,7 @@ def save_picture(form_picture):
     resize_image.save(picture_path)
 
     return picture_filename
+
 
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
@@ -83,6 +90,7 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
 
+
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
@@ -94,3 +102,9 @@ def new_post():
         flash('Your new post has been created!', 'success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post', form=form)
+
+
+@app.route("/post/<int:post_id>", methods=['GET', 'POST'])
+def post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', title=post.title, post=post)
