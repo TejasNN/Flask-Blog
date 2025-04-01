@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
 
     @staticmethod
     def verify_reset_token(token, expire_sec=1800):
-        s = Serializer(app.config['SECERET_KEY'])
+        s = Serializer(app.config['SECRET_KEY'])
         try:
             user_id = s.loads(token, max_age=expire_sec)['user_id']
         except:
